@@ -1,31 +1,57 @@
 <?php
 
 class Technician {
-
-    private string $name;
-    private ?Vehicule $vehicule = null;
-
-    public function __construct(string $name) {
-        $this->name = $name;
-    }
-
-    public function setVehicule(?Vehicule $vehicule) : Technician {
-
-        if($this->vehicule !== null) {
-            $this->vehicule->delTechnician($this);
+    
+        public function __construct(private array $vehicules = []) {
+            $this->setVehicules($vehicules);
         }
 
-        // Pour automatiser la mise à jour des liens bidirectionnels: 
-        // Si le technicien est déjà lié à un véhicule, on le délie
-        if($vehicule !== null) {
-            $vehicule->addTechnician($this);
+        public function addVehicule(Vehicule $vehicule) : bool {
+
+            if(!in_array($vehicule, $this->vehicules, true)) {
+                // Ajout d'un vehicule au technicien
+                $this->vehicules[] = $vehicule;
+                // Ajout du technicien au vehicule
+                $vehicule->addTechnician($this);
+                return true;
+            }
+            return false;
         }
 
-        $this->vehicule = $vehicule;
-        return $this;
-    }
+        public function removeVehicule(Vehicule $vehicule) : bool {
 
-    public function getVehicle() : ?Vehicule {
-        return $this->vehicle;
-    }
+            $key = array_search($vehicule, $this->vehicules, true);
+            if($key !== false) {
+                // Suppression du vehicule du technicien
+                unset($this->vehicules[$key]);
+                // Suppression du technicien du vehicule
+                $vehicule->removeTechnician($this);
+                return true;
+            }
+            return false;
+        }
+
+        public function setVehicules(array $vehicules) : self {
+
+            // mise a jour des items de la collection avant qu'elle ne soit écrasée par la nouvelle collection
+            foreach($this->vehicules as $vehicule) {
+                $vehicule->removeTechnician($this);
+            }
+
+            // Vider la collection en cours pour la remplacer par la nouvelle collection
+            $this->vehicules = [];
+
+            // écrase la collection en cours avec la nouvelle collection
+            foreach($vehicules as $vehicule) {
+                $this->addVehicule($vehicule);
+            }
+
+            
+            return $this;
+        }
+
+        public function getVehicules() : array {
+
+            return $this->vehicules;
+        }
 }

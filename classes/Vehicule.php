@@ -2,38 +2,40 @@
 
 class Vehicule {
 
-    private string $registerNumber;
-    
-    /**
-     * @var array Les technicians
-     */
-    private array $technicians = [];
-
-    public function __construct(string $registerNumber) {
-        $this->registerNumber = $registerNumber;
+    public function __construct(private array $technicians = []) {
     }
-    
-    /**
-     * Add a technician
-     */
-    public function addTechnician(Technician $technician): Vehicule
-    {
-        array_push($this->technicians, $technician);
+
+
+
+    public function addTechnician(Technician $technician) :  bool  {
+
+        if(!in_array($technician, $this->technicians, true)) {
+            $this->technicians[] = $technician;
+            return true;
+        }
+        return false;
+    }
+
+    public function removeTechnician(Technician $technician) : bool {
+
+        $key = array_search($technician, $this->technicians, true);
+        if($key !== false) {
+            unset($this->technicians[$key]);
+            return true;
+        }
+        return false;
+    }
+
+    public function setTechnicians(array $technicians) : self {
+
+       foreach($technicians as $technician) {
+           $this->addTechnician($technician);
+         }
         return $this;
     }
 
-    /**
-     * Delete a technician
-     */
-    public function deleteTechnician(Technician $technician): Vehicule
-    {
-        $key = array_search($technician, $this->technicians);
-        unset($this->technicians[$key]);
-        return $this;
-    }
+    public function getTechnicians() : array {
 
-    public function getTechnicians(Technician $technician) : array {
         return $this->technicians;
     }
-    
 }
