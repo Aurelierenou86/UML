@@ -5,8 +5,6 @@ class Vehicule {
     public function __construct(private array $technicians = []) {
     }
 
-
-
     public function addTechnician(Technician $technician) :  bool  {
 
         if(!in_array($technician, $this->technicians, true)) {
