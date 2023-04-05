@@ -2,7 +2,7 @@
 
 class Waiter {
 
-    public function __construct(private array $tables = []) {
+    public function __construct(private array $table = []) {
         $this->setTables($tables);
     }
     
